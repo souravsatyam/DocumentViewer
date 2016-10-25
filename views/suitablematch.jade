@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  -var obj = employee_data
+  
+  -for(var prop in obj)
+    -var link = obj[prop]['user_cv_details'];
+    h1 #{obj[prop]['email']}
+    a(href="public/upload/"+link) #{obj[prop]['user_cv_details']}

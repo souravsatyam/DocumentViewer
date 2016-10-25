@@ -1,0 +1,30 @@
+extends layout
+
+
+block content
+  form(action='/newuserCVRecord',method='post', enctype="multipart/form-data" )
+    input(type="file" name="sampleFile" placeholder="Upload")
+    input(type="hidden" name="user_id" value=user_id)
+    input(type="hidden" name="user_email" value=user_email)
+    input(type="submit" value="upload")
+  #myDiv
+    -var ob = cv_data
+    
+    
+  #new_div
+    -var nob = cv_data
+    -for(var prop in nob)
+      h1 #{ob[prop]['email_user_email']}
+      -var link = ob[prop]['cv_upload']
+      a(href="public/upload/"+link) #{ob[prop]['cv_upload']}
+      
+
+  
+  
+  
+
+
+   
+  
+    
+    

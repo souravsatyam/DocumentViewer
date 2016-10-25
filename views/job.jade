@@ -1,0 +1,22 @@
+extends layout
+
+
+block content
+  .job_description
+    
+      
+        -var obj = job_data
+        -for(var prop in obj)
+          -var keywords = obj[prop]['desc_list']
+          -var id = obj[prop]['id']		  
+          .details
+            form(method="post" action="/getSuitableProfile")
+              p #{obj[prop]['id']}
+              p #{obj[prop]['title']}
+              p #{obj[prop]['description']}
+              input(type= "hidden" , name="key_job_match", value="#{keywords}")
+              input(type= "hidden" , name="id_job_match", value="#{id}")
+              p: #[input(type="submit" value="getProfile")]
+              
+
+      
