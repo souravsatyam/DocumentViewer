@@ -49,7 +49,7 @@ io.on('connection', function(socket){
 	});
 });
 
-http.listen(3000, function(){
+http.listen(9000, function(){
 	
 	console.log("App is Listening port 3000");
 	
@@ -82,6 +82,13 @@ app.post('/getSuitableProfile', routes.getSuitableProfile);
 app.get('/Djangologin', routes.Djangologin);
 app.get('/Djangohome', routes.Djangohome);
 app.get('/DjangoJob', routes.DjangoJob);
+app.get('/Check', routes.Check);
+app.get('/postJob', routes.postJob);
+app.post('/postJobData', routes.postJobData);
+app.get('/do_logout', routes.do_logout);
+app.get('/uploader_login', routes.uploader_login);
+app.post('/newuserUploaderRecord', routes.newuserUploaderRecord);
+app.get('/uploader_logout', routes.uploader_logout);
 
 
 
