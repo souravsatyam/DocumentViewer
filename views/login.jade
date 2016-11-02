@@ -1,10 +1,17 @@
 extends layout
 
+
 block content
-  form(action='/newuserLoginRecord',method='post')
-    input(type="text" name="username" placeholder="username")
-    input(type="password" name="password" placeholder="password")
-    input(type="submit" value="post")
+  section(class="container")
+    .login
+      h1 Job Seeker Login
+      form(action='/newuserLoginRecord',method='post')
+        p: #[input(type="text" name="username" placeholder="username")]
+        p: #[input(type="password" name="password" placeholder="password")]
+        input(type="submit" value="Login")
+    .login-help
+      p: #[a(href="/readDjango") Click here to register]
+      p: #[a(href="/uploader_login") Check Job Profile]
   
   
 
