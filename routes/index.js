@@ -10,6 +10,8 @@ var appDir = path.dirname(require.main.filename);
 
 var querystring = require('querystring');
 var http = require('http');
+
+
 var request = require("request");
 var session = require('express-session');
 var fileUpload = require('express-fileupload');
@@ -129,8 +131,8 @@ module.exports.userRecord = router.post('/userRecord' , function(req, res){
     });
 	
 	var options = {
-    host: '121.242.13.22',
-    port: 8015,
+    host: '192.168.0.4',
+    port: 8000,
     path: '/user_register/',
     method: 'POST',
     headers: {
@@ -171,7 +173,12 @@ module.exports.userRecord = router.post('/userRecord' , function(req, res){
 });
 
 module.exports.Djangologin = router.get('/Djangologin' , function(req, res){
+	if(req.session.id==""){
 	res.render('login',{ title : 'Login Here' });
+	}
+	else{
+		res.redirect('/Djangohome');
+	}
 });
 
 
@@ -188,8 +195,8 @@ module.exports.newuserLoginRecord = router.post('/newuserLoginRecord' , function
     });
 	
 	var options = {
-    host: '121.242.13.22',
-    port: 8015,
+    host: '192.168.0.4',
+    port: 8000,
     path: '/user_login/',
     method: 'POST',
     headers: {
@@ -240,7 +247,12 @@ module.exports.Djangohome = router.get('/Djangohome' , function(req, res){
 	
 	//------------- GETTING DATA OF THE PAGE ----------------------------------//
 	
-	var url = "http://121.242.13.22:8015/techprofile/?format=json&user_id="+req.session.id;
+	if(req.session.id== ""){
+		
+		res.redirect('/DjangoLogin');
+	}
+	else{
+	var url = "http://192.168.0.4:8000/techprofile/?format=json&user_id="+req.session.id;
 	var userData= [];
 	var Array;
 
@@ -267,7 +279,7 @@ module.exports.Djangohome = router.get('/Djangohome' , function(req, res){
         }
      });
 	
-	
+	}
 	
 	//------------------------ END HERE ---------------------------------------//
 	
@@ -333,15 +345,27 @@ module.exports.newuserCVRecord = router.post('/newuserCVRecord' , function(req, 
 			
 			//------------------ Reading Docx --------------------//
 			
-			
+	var url = "http://192.168.0.4:8000/clusterhead/?format=json";
+	var userData= [];
+	var Matching_data=[];
+	var Array = [];
+	var cluster_head = [];
+
+      request({
+       url: url,
+         json: true
+         }, function (error, response, body) {
+
+         if (!error && response.statusCode === 200) {	
 			
 			if(file_ext=="application/vnd.openxmlformats-officedocument.wordprocessingml.document"){
-				
-				mammoth.extractRawText({path: cv}, "p[style-name='Section Title'] => h1:fresh")
+	              			mammoth.extractRawText({path: cv}, "p[style-name='Section Title'] => h1:fresh")
     .then(function(docx) {
 		
-		
-		
+		  Array = body;
+		  
+          //console.log(Array[0]['head'].toString());
+		  
 		var myJSONString = JSON.stringify(docx);
         var myEscapedJSONString = myJSONString.replace(/\\n/g, "")
                                       .replace(/\\'/g, "")
@@ -352,54 +376,55 @@ module.exports.newuserCVRecord = router.post('/newuserCVRecord' , function(req, 
                                       .replace(/\\b/g, "")
                                       .replace(/\\f/g, "");
 		var jsonObject = JSON.parse(myEscapedJSONString);
-		//res.send(jsonObject.value);
-		//res.send(myEscapedJSONString);
+	    var cvText = jsonObject.value;
 		
-		var cvText = jsonObject.value;
+		for(var i =0 ; i<Array.length;i++){
+			
+			var skills_string = Array[i]['words'];
+			
+			var skills_array = skills_string.split(/[ ,]+/);
+			
+			var words1 = cvText.split(/[ ,]+/);
+			
+			for(var k=0;k<skills_array.length; k++){
+				
+				for(var j=0;j<words1.length;j++){
+					
+					if (skills_array[k].toLowerCase() == words1[j].toLowerCase()){
+						console.log("Matched");
+					    Matching_data.push(skills_array[k]);
+					    cluster_head.push(Array[i]['head']);
+						
+						//console.log(Matching_data);
+						//console.log(cluster_head);
+					}
+				}
+			}
+			
+			//console.log(skills_array[0]);
+			//console.log(Array[i]['head']);
+		}
 		
+		//console.log(unique(Matching_data));
 		
-		fs.readFile('technology.txt', 'utf8', function(err, contents) {
-        console.log(contents);
+		//console.log(unique(cluster_head));
 		
-		//------ Matching common word between string -----//
+		cluster_head = unique(cluster_head);
 		
-		var words1 = cvText.split(/\s+/g),
-            words2 = contents.split(/\s+/g),
-    i,
-    j;
-	    var keywords = [];
-		var uniqueNames = [];
-
-for (i = 0; i < words2.length; i++) {
-    for (j = 0; j < words1.length; j++) {
-        if (words2[i].toLowerCase() == words1[j].toLowerCase()) {
-		   keywords.push(words2[i]);
-		   
-           console.log('word '+words2[i]+' was found in both strings');
-        }
-    }
-}     
-        keywords = unique(keywords);
-		var key_terms = keywords.toString();
+		Matching_data = unique(Matching_data);
 		
-		//------ End Here -----------------------------//
-	   
-	
-
-		
-		
-		//------ UPLOADING AND SENDING FILE TO ANOTHER SERVER ---------//
 		var data = querystring.stringify({
+		  clusters: cluster_head.toString(),
           user_id: user_id,
           email_user_email: user_email,
 	      cv_upload : link_cv,
 		  cv_text : jsonObject.value,
-		  skills : key_terms
+		  skills : Matching_data.toString()
 	    });
 		
 			var options = {
-              host: '121.242.13.22',
-              port: 8015,
+              host: '192.168.0.4',
+              port: 8000,
               path: '/profile_upload/',
               method: 'POST',
               headers: {
@@ -407,9 +432,8 @@ for (i = 0; i < words2.length; i++) {
                  'Content-Length': Buffer.byteLength(data)
                   }
              };
-		
-		
-		  var httpreq = http.request(options, function (response) {
+			 
+		var httpreq = http.request(options, function (response) {
           response.setEncoding('utf8');
           response.on('data', function (chunk) {
          console.log("body: " + chunk);
@@ -433,14 +457,15 @@ for (i = 0; i < words2.length; i++) {
 	  console.log("Ok");
     })
   });
-  
-  
-  httpreq.write(data);
-  //res.send(docx);
-  //fs.writeFile("kiran.txt", docx, callback);
+	  httpreq.write(data);	
+		
+
+		
+		
     });
 	
- });
+
+				  
 }
 
  if(file_ext == "application/pdf"){
@@ -498,8 +523,8 @@ for (i = 0; i < words2.length; i++) {
 	    });
 		
 			var options = {
-              host: '121.242.13.22',
-              port: 8015,
+              host: '192.168.0.4',
+              port: 8000,
               path: '/profile_upload/',
               method: 'POST',
               headers: {
@@ -547,7 +572,9 @@ for (i = 0; i < words2.length; i++) {
 } 
 
 
-
+		 }
+		 
+		 });
 
  
         }
@@ -558,7 +585,12 @@ for (i = 0; i < words2.length; i++) {
 
 module.exports.DjangoJob = router.get('/DjangoJob' , function(req, res){
 	//res.render('job',{ title : 'Job Description' });
-    var url = "http://121.242.13.22:8015/jobdescription/?format=json";
+	if(req.session.u_id == 0){
+		
+		res.redirect('/uploader_login')
+	}
+	else{
+    var url = "http://192.168.0.4:8000/jobdescription/?format=json";
 	var userData= [];
 	var Array;
 
@@ -574,7 +606,7 @@ module.exports.DjangoJob = router.get('/DjangoJob' , function(req, res){
 			 
 			     //Array = body;
                  //console.log(Array[0]["url"].toString());
-				 console.log(body);
+				 //console.log(body);
 				 res.render('job',{ title : 'Job Description', job_data: body });
 			 
 			 //------ End Here ---------//
@@ -583,21 +615,27 @@ module.exports.DjangoJob = router.get('/DjangoJob' , function(req, res){
 			 
         }
      });
+	}
 });
 
 
 module.exports.getSuitableProfile = router.post('/getSuitableProfile' , function(req, res,callback){
 	
 	
-	var job_id = req.body.id_job_match;
-	
-	var job_keywords = req.body.key_job_match.slice(1,-1);
 	
 	
+	var job_data = req.body.key_job_match;
 	
-	var keywords = job_keywords.replace(/'/g, '');
+	var regex = /(<([^>]+)>)/ig;
+
+    job_data = job_data.replace(regex, "");
 	
-	var keywords_array = keywords.split(',');
+	job_data = job_data.replace(/\r?\n|\r/g, " ");
+	
+	
+	
+	
+    var job_data_array = job_data.split(/[ ,]+/);
 	
 	
 	
@@ -611,7 +649,7 @@ module.exports.getSuitableProfile = router.post('/getSuitableProfile' , function
 	
 	//------ READING THE JSON FORMAT DATA -----//
 	
-	var url = "http://121.242.13.22:8015/techprofile/?format=json";
+	var url = "http://192.168.0.4:8000/techprofile/?format=json";
 	
 	  request({
        url: url,
@@ -632,34 +670,35 @@ module.exports.getSuitableProfile = router.post('/getSuitableProfile' , function
 				var count = Object.keys(body).length;
 				//console.log(count);
 				
-				 
+				
 				 
 				 
 				 for(var count_user=0; count_user<count; count_user++){
 					 
-					 var string_match = body[count_user]['cv_text'];
+					 var string_match = body[count_user]['skills'];
 					 
 					 
-					 var string_array = string_match.split(/\s+&nbsp;\r\n/g);
+					 var string_array = string_match.split(/[ ,]+/);
 					 
 					 //console.log(string_array.length);
 					 
 					 //console.log(string_array);
 					 //console.log(keywords);
 					 
-					 for(var i=0; i<keywords_array.length; i++){
+					 for(var i=0; i<string_array.length; i++){
 						 
-						 for(var j=0; j<string_array.length; j++){
-							  if(string_array[j].toLowerCase().indexOf(keywords_array[i].toLowerCase()) > -1){
+						 for(var j=0; j<job_data_array.length; j++){
+							  if (string_array[i].toLowerCase() == job_data_array[j].toLowerCase()){
 								//console.log("Hello");
-								
-								words_check.push(keywords_array[i]); 
+								//console.log(string_array[i]);
+								words_check.push(string_array[i]); 
 							 }
 						}
 					}
 					
 					
-					
+					 
+					 console.log(unique(words_check));
 					 
 					 if(words_check.length>0){
 						if(body[count_user]['user_id']!="null"){
@@ -671,7 +710,7 @@ module.exports.getSuitableProfile = router.post('/getSuitableProfile' , function
 					words_check = []; 
 					 
 				 }
-				 console.log(user_id);
+				 //console.log(user_id);
 				 res.render('suitablematch',{ title : 'Suitable Match', employee_data: user_id});
 				 //res.send(unique(user_id));
 				 
@@ -688,6 +727,129 @@ module.exports.getSuitableProfile = router.post('/getSuitableProfile' , function
 
 
 
+
+module.exports.Check = router.get('/Check' , function(req, res){
+	//res.render('job',{ title : 'Job Description' });
+    var url = "http://192.168.0.4:8000/clusterhead/?format=json";
+	var Json_details ;
+	var Array = [];
+
+      request({
+       url: url,
+         json: true
+         }, function (error, response, body) {
+
+         if (!error && response.statusCode === 200) {
+                Json_details = body;
+		}
+		  
+		  
+		  Array = body;
+		  res.send(body);
+          res.send(Array[0]["id"].toString());
+     });
+	 
+});
+
+
+//------ Job Description ------//
+
+module.exports.postJob = router.get('/postJob' , function(req, res){
+	
+	res.render('jobpost',{ title : 'Post Job' });
+	
+	
+});
+
+
+
+//------ End Here -----------//
+
+//------ POSTING JOB DATA HERE ------------//
+
+module.exports.postJobData = router.post('/postJobData' , function(req, res){
+	
+	var skills = req.body.skills;
+	var skills_description = req.body.skills_description;
+	
+	var data = querystring.stringify({
+          title: skills,
+          description: skills_description
+	    });
+		
+			var options = {
+              host: '192.168.0.4',
+              port: 8000,
+              path: '/job_post/',
+              method: 'POST',
+              headers: {
+                 'Content-Type': 'application/x-www-form-urlencoded',
+                 'Content-Length': Buffer.byteLength(data)
+                  }
+             };
+		 var httpreq = http.request(options, function (response) {
+          response.setEncoding('utf8');
+          response.on('data', function (chunk) {
+			   res.redirect("/DjangoJob");
+		  });
+	      
+		  });
+		   httpreq.write(data);
+});
+
+//------- END HERE --------------------//
+
+//----- Logout -----//
+
+module.exports.do_logout = router.get('/do_logout', function(req, res){
+	
+	 req.session.id= "";
+	 req.session.email = "";
+	 
+	 res.redirect('/Djangologin');
+});
+
+
+
+
+
+
+//--- End Here -----//
+
+
+module.exports.uploader_login = router.get('/uploader_login', function(req, res){
+	 res.render('uploader_login',{ title : 'Uploader Login'});
+	
+});
+
+
+//---- Login Of Uploader -----//
+
+module.exports.newuserUploaderRecord = router.post('/newuserUploaderRecord', function(req, res){
+	 var username = req.body.username;
+	 var password = req.body.password;
+	 
+	 if(username=="uploader" && password== "uploader"){
+		 req.session.u_id = 1;
+		 res.redirect('/DjangoJob');
+		 
+	 }
+	 else{
+		 req.session.u_id = 0;
+		 res.redirect('/uploader_login');
+		 
+	 }
+	
+});
+
+
+//----- End Here -------------//
+
+module.exports.uploader_logout = router.get('/uploader_logout', function(req, res){
+	 req.session.u_id= 0
+	 res.redirect('/uploader_login');
+	
+});
 
 
 
