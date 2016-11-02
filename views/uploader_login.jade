@@ -1,0 +1,23 @@
+extends layout
+
+
+block content
+  section(class="container")
+    .login
+      h1 Uploader Login
+      form(action='/newuserUploaderRecord',method='post')
+        p: #[input(type="text" name="username" placeholder="username")]
+        p: #[input(type="password" name="password" placeholder="password")]
+        input(type="submit" value="Login")
+    .login-help
+      p: #[a(href="/DjangoLogin") Back to Job Seeker Login]
+      
+    
+  
+  
+
+
+   
+  
+    
+    
