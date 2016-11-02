@@ -5,5 +5,7 @@ block content
   
   -for(var prop in obj)
     -var link = obj[prop]['user_cv_details'];
-    h1 #{obj[prop]['email']}
-    a(href="public/upload/"+link) #{obj[prop]['user_cv_details']}
+    .cards
+      center: #[img(id="pro_image" src="/public/images/blank.png" height="80" width="100") ]
+      center: #[h2 #{obj[prop]['email']} ]
+      center: #[a(href="public/upload/"+link) #{obj[prop]['user_cv_details']} ]
