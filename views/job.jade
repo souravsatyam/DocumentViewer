@@ -2,21 +2,30 @@ extends layout
 
 
 block content
-  .job_description
-    
-      
-        -var obj = job_data
+
+  .container
+        
+        ul(id="nav")
+          li: #[a(href="/uploader_logout") Logout]
+          li: #[a(href="/postJob") Post Job]
+          li: #[a(href="/DjangoJob") Home]
+     -var obj = job_data
         -for(var prop in obj)
           -var keywords = obj[prop]['desc_list']
           -var id = obj[prop]['id']		  
           .details
             form(method="post" action="/getSuitableProfile")
-              p #{obj[prop]['id']}
-              p #{obj[prop]['title']}
-              p #{obj[prop]['description']}
-              input(type= "hidden" , name="key_job_match", value="#{keywords}")
+              
+              h1 #{obj[prop]['title']}
+              .card
+                article(class="card card_main")
+                  
+                  .card_description
+                    p !{obj[prop]['description']}
+              input(type= "hidden" , name="key_job_match", value="#{obj[prop]['description']}")
               input(type= "hidden" , name="id_job_match", value="#{id}")
               p: #[input(type="submit" value="getProfile")]
+        
               
 
       
