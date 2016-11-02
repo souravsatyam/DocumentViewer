@@ -2,6 +2,12 @@ doctype html
 html
   head
     title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/public/stylesheets/style.css')
+    link(rel='stylesheet', href='/public/stylesheets/component.css')
+    link(rel='stylesheet', href='/public/stylesheets/demo.css')
+    link(rel='stylesheet', href='/public/stylesheets/normalize.css')
+    script(src="//cdn.tinymce.com/4/tinymce.min.js")
+    script.
+      tinymce.init({ selector:'textarea' });
   body
     block content
