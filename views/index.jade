@@ -1,13 +1,17 @@
 extends layout
 
 block content
-  form(action='/userRecord',method='post')
-    h1= title
-    p Welcome to #{title}
-    input(type="text" name="username" placeholder="username")
-    input(type="password" name="password" placeholder="password")
-    input(type="text" name="fullname" placeholder="Full Name")
-    input(type="text" name="address" placeholder="Address")
-    input(type="text" name="phone" placeholder="Phone")
-    input(type="text" name="email" placeholder="Email")
-    input(type="submit" value="post")
+  section(class="container")
+    .login
+      h1 Job Seeker Register
+      form(action='/userRecord',method='post')
+    
+        input(type="text" name="username" placeholder="username")
+        input(type="password" name="password" placeholder="password")
+        input(type="text" name="fullname" placeholder="Full Name")
+        input(type="text" name="address" placeholder="Address")
+        input(type="text" name="phone" placeholder="Phone")
+        input(type="text" name="email" placeholder="Email")
+        input(type="submit" value="Register")
+    .login-help
+      p: #[a(href="/DjangoLogin") Click here to Login]
