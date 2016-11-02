@@ -131,8 +131,8 @@ module.exports.userRecord = router.post('/userRecord' , function(req, res){
     });
 	
 	var options = {
-    host: '192.168.0.4',
-    port: 8000,
+    host: '121.242.13.22',
+    port: 8015,
     path: '/user_register/',
     method: 'POST',
     headers: {
@@ -195,8 +195,8 @@ module.exports.newuserLoginRecord = router.post('/newuserLoginRecord' , function
     });
 	
 	var options = {
-    host: '192.168.0.4',
-    port: 8000,
+    host: '121.242.13.22',
+    port: 8015,
     path: '/user_login/',
     method: 'POST',
     headers: {
@@ -252,7 +252,7 @@ module.exports.Djangohome = router.get('/Djangohome' , function(req, res){
 		res.redirect('/DjangoLogin');
 	}
 	else{
-	var url = "http://192.168.0.4:8000/techprofile/?format=json&user_id="+req.session.id;
+	var url = "http://121.242.13.22:8015/techprofile/?format=json&user_id="+req.session.id;
 	var userData= [];
 	var Array;
 
@@ -345,7 +345,7 @@ module.exports.newuserCVRecord = router.post('/newuserCVRecord' , function(req, 
 			
 			//------------------ Reading Docx --------------------//
 			
-	var url = "http://192.168.0.4:8000/clusterhead/?format=json";
+	var url = "http://121.242.13.22:8015/clusterhead/?format=json";
 	var userData= [];
 	var Matching_data=[];
 	var Array = [];
@@ -423,8 +423,8 @@ module.exports.newuserCVRecord = router.post('/newuserCVRecord' , function(req, 
 	    });
 		
 			var options = {
-              host: '192.168.0.4',
-              port: 8000,
+              host: '121.242.13.22',
+              port: 8015,
               path: '/profile_upload/',
               method: 'POST',
               headers: {
@@ -523,8 +523,8 @@ for (i = 0; i < words2.length; i++) {
 	    });
 		
 			var options = {
-              host: '192.168.0.4',
-              port: 8000,
+              host: '121.242.13.22',
+              port: 8015,
               path: '/profile_upload/',
               method: 'POST',
               headers: {
@@ -590,7 +590,7 @@ module.exports.DjangoJob = router.get('/DjangoJob' , function(req, res){
 		res.redirect('/uploader_login')
 	}
 	else{
-    var url = "http://192.168.0.4:8000/jobdescription/?format=json";
+    var url = "http://121.242.13.22:8015/jobdescription/?format=json";
 	var userData= [];
 	var Array;
 
@@ -649,7 +649,7 @@ module.exports.getSuitableProfile = router.post('/getSuitableProfile' , function
 	
 	//------ READING THE JSON FORMAT DATA -----//
 	
-	var url = "http://192.168.0.4:8000/techprofile/?format=json";
+	var url = "http://121.242.13.22:8015/techprofile/?format=json";
 	
 	  request({
        url: url,
@@ -730,7 +730,7 @@ module.exports.getSuitableProfile = router.post('/getSuitableProfile' , function
 
 module.exports.Check = router.get('/Check' , function(req, res){
 	//res.render('job',{ title : 'Job Description' });
-    var url = "http://192.168.0.4:8000/clusterhead/?format=json";
+    var url = "http://121.242.13.22:8015/clusterhead/?format=json";
 	var Json_details ;
 	var Array = [];
 
@@ -778,8 +778,8 @@ module.exports.postJobData = router.post('/postJobData' , function(req, res){
 	    });
 		
 			var options = {
-              host: '192.168.0.4',
-              port: 8000,
+              host: '121.242.13.22',
+              port: 8015,
               path: '/job_post/',
               method: 'POST',
               headers: {
