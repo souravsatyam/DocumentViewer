@@ -1,0 +1,26 @@
+extends layout
+link(href='/css/normalize.css', rel='stylesheet')
+
+block content
+  .container
+    ul(id="nav")
+      li: #[a(href="/uploader_logout") Logout]
+      li: #[a(href="/postJob") Post Job]
+      li: #[a(href="/DjangoJob") Home]
+    form(action='/postJobData',method='post', enctype="multipart/form-data" )
+    
+      input(type="text" name="skills" placeholder="Title")
+      textarea(name="skills_description" placeholder="Description of Job Here")
+      input(type="submit" value="upload")
+
+      
+
+  
+  
+  
+
+
+   
+  
+    
+    
